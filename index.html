@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FoodWise - Healthy Food & Junk Food Analyzer</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+
+<nav class="navbar">
+
+    <div class="logo">
+        🥗 FoodWise
+    </div>
+
+    <div class="nav-links">
+        <a href="#home">Home</a>
+        <a href="#foods">Foods</a>
+        <a href="#compare">Compare</a>
+        <a href="#planner">Diet Planner</a>
+        <a href="#replacements">Food Swaps</a>
+        <a href="#about">About</a>
+    </div>
+
+    <button id="themeBtn" class="theme-btn">
+        🌙
+    </button>
+
+</nav>
+
+
+<!-- ================= HERO ================= -->
+
+<section class="hero" id="home">
+
+    <div class="hero-content">
+
+        <div class="hero-text">
+
+            <span class="badge">
+                🥗 Smart Food Choice Assistant
+            </span>
+
+            <h1>
+                Eat Better.
+                <span>Live Better.</span>
+            </h1>
+
+            <p>
+                Compare healthy and junk foods, analyze nutrition,
+                create a personalized food plan and discover
+                healthier alternatives to your favorite junk foods.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="#foods" class="primary-btn">
+                    Explore Foods 🍎
+                </a>
+
+                <a href="#planner" class="secondary-btn">
+                    Create My Plan 🥗
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="hero-image">
+            🍎
+            🥦
+            🍌
+            🥕
+            🍕
+            🍔
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= STATISTICS ================= -->
+
+<section class="stats-section">
+
+    <div class="stats-container">
+
+        <div class="stat-card">
+
+            <span class="stat-icon">🥗</span>
+
+            <h2 id="healthyCount">
+                0
+            </h2>
+
+            <p>
+                Healthy Foods
+            </p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span class="stat-icon">🍔</span>
+
+            <h2 id="junkCount">
+                0
+            </h2>
+
+            <p>
+                Junk Foods
+            </p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span class="stat-icon">🍎</span>
+
+            <h2 id="fruitCount">
+                0
+            </h2>
+
+            <p>
+                Fruits
+            </p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span class="stat-icon">🥦</span>
+
+            <h2>
+                50+
+            </h2>
+
+            <p>
+                Food Options
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= FOOD DATABASE ================= -->
+
+<section class="foods-section" id="foods">
+
+    <div class="section-title">
+
+        <span class="section-label">
+            FOOD DATABASE
+        </span>
+
+        <h2>
+            Explore Healthy & Junk Foods
+        </h2>
+
+        <p>
+            Search, filter and compare different foods.
+        </p>
+
+    </div>
+
+
+    <!-- CONTROLS -->
+
+    <div class="controls">
+
+        <div class="search-box">
+
+            🔎
+
+            <input
+                type="text"
+                id="search"
+                placeholder="Search food..."
+            >
+
+        </div>
+
+
+        <select id="categoryFilter">
+
+            <option value="all">
+                All Foods
+            </option>
+
+            <option value="healthy">
+                Healthy Foods
+            </option>
+
+            <option value="junk">
+                Junk Foods
+            </option>
+
+            <option value="fruit">
+                Fruits
+            </option>
+
+            <option value="vegetable">
+                Vegetables
+            </option>
+
+            <option value="meal">
+                Meals
+            </option>
+
+            <option value="snack">
+                Snacks
+            </option>
+
+        </select>
+
+
+        <select id="sortFilter">
+
+            <option value="default">
+                Sort: Default
+            </option>
+
+            <option value="caloriesLow">
+                Calories: Low → High
+            </option>
+
+            <option value="caloriesHigh">
+                Calories: High → Low
+            </option>
+
+            <option value="proteinHigh">
+                Protein: High → Low
+            </option>
+
+            <option value="sugarLow">
+                Sugar: Low → High
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- FOOD CARDS -->
+
+    <div
+        class="food-grid"
+        id="foodGrid">
+    </div>
+
+</section>
+
+
+<!-- ================= COMPARISON ================= -->
+
+<section class="compare-section" id="compare">
+
+    <div class="section-title">
+
+        <span class="section-label">
+            NUTRITION COMPARISON
+        </span>
+
+        <h2>
+            Compare Two Foods
+        </h2>
+
+        <p>
+            See the nutritional difference between two foods.
+        </p>
+
+    </div>
+
+
+    <div class="compare-controls">
+
+        <div>
+
+            <label>
+                First Food
+            </label>
+
+            <select id="food1">
+            </select>
+
+        </div>
+
+
+        <div class="vs">
+            VS
+        </div>
+
+
+        <div>
+
+            <label>
+                Second Food
+            </label>
+
+            <select id="food2">
+            </select>
+
+        </div>
+
+
+        <button
+            id="compareBtn"
+            class="primary-btn">
+
+            Compare Foods
+
+        </button>
+
+    </div>
+
+
+    <div
+        id="comparisonResult"
+        class="comparison-result">
+    </div>
+
+
+    <div class="chart-container">
+
+        <canvas id="nutritionChart"></canvas>
+
+    </div>
+
+</section>
+
+
+<!-- ================= DIET PLANNER ================= -->
+
+<section
+    class="diet-planner"
+    id="planner">
+
+    <div class="section-title">
+
+        <span class="section-label">
+            PERSONALIZED PLANNER
+        </span>
+
+        <h2>
+            🥗 Personalized Diet Planner
+        </h2>
+
+        <p>
+            Get general food suggestions based on your
+            body details, activity level and goal.
+        </p>
+
+    </div>
+
+
+    <div class="planner-container">
+
+
+        <!-- FORM -->
+
+        <div class="planner-form">
+
+            <h3>
+                👤 Your Information
+            </h3>
+
+
+            <div class="input-group">
+
+                <label>
+                    Weight (kg)
+                </label>
+
+                <input
+                    type="number"
+                    id="userWeight"
+                    placeholder="Example: 70"
+                    min="20"
+                    max="300">
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>
+                    Height (cm)
+                </label>
+
+                <input
+                    type="number"
+                    id="userHeight"
+                    placeholder="Example: 170"
+                    min="100"
+                    max="250">
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>
+                    Age
+                </label>
+
+                <input
+                    type="number"
+                    id="userAge"
+                    placeholder="Example: 21"
+                    min="13"
+                    max="100">
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>
+                    Gender
+                </label>
+
+                <select id="userGender">
+
+                    <option value="male">
+                        Male
+                    </option>
+
+                    <option value="female">
+                        Female
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>
+                    Activity Level
+                </label>
+
+                <select id="activityLevel">
+
+                    <option value="low">
+                        Low - Mostly Sitting
+                    </option>
+
+                    <option value="moderate">
+                        Moderate - Exercise 3-5 Days
+                    </option>
+
+                    <option value="high">
+                        High - Very Active
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>
+                    Your Goal
+                </label>
+
+                <select id="dietGoal">
+
+                    <option value="maintain">
+                        Maintain Weight
+                    </option>
+
+                    <option value="loss">
+                        Weight Loss
+                    </option>
+
+                    <option value="gain">
+                        Weight Gain
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <button
+                class="generate-btn"
+                onclick="generateDietPlan()">
+
+                Generate My Diet Plan 🍎
+
+            </button>
+
+        </div>
+
+
+        <!-- RESULT -->
+
+        <div
+            id="dietResult"
+            class="diet-result">
+
+            <div class="empty-planner">
+
+                <span>
+                    🥑
+                </span>
+
+                <h3>
+                    Your personalized plan will appear here
+                </h3>
+
+                <p>
+                    Enter your details and generate your plan.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= FOOD REPLACEMENTS ================= -->
+
+<section
+    class="replacement-section"
+    id="replacements">
+
+    <div class="section-title">
+
+        <span class="section-label">
+            SMART FOOD SWAPS
+        </span>
+
+        <h2>
+            🔄 Replace Junk Food With Better Choices
+        </h2>
+
+        <p>
+            Select a junk food and discover a healthier
+            alternative.
+        </p>
+
+    </div>
+
+
+    <div class="replacement-selector">
+
+        <label>
+            What junk food do you usually eat?
+        </label>
+
+
+        <select id="junkFoodSelect">
+
+            <option value="">
+                -- Select Junk Food --
+            </option>
+
+            <option value="French Fries">
+                🍟 French Fries
+            </option>
+
+            <option value="Pizza">
+                🍕 Pizza
+            </option>
+
+            <option value="Cheeseburger">
+                🍔 Cheeseburger
+            </option>
+
+            <option value="Potato Chips">
+                🥔 Potato Chips
+            </option>
+
+            <option value="Donut">
+                🍩 Donut
+            </option>
+
+            <option value="Chocolate Bar">
+                🍫 Chocolate Bar
+            </option>
+
+            <option value="Ice Cream">
+                🍦 Ice Cream
+            </option>
+
+            <option value="Fried Chicken">
+                🍗 Fried Chicken
+            </option>
+
+            <option value="Soda">
+                🥤 Soda
+            </option>
+
+            <option value="Instant Noodles">
+                🍜 Instant Noodles
+            </option>
+
+            <option value="Cookies">
+                🍪 Cookies
+            </option>
+
+            <option value="Milkshake">
+                🥛 Milkshake
+            </option>
+
+        </select>
+
+
+        <button
+            onclick="suggestReplacement()">
+
+            Find Healthy Replacement 🔍
+
+        </button>
+
+    </div>
+
+
+    <div
+        id="replacementResult">
+    </div>
+
+</section>
+
+
+<!-- ================= TIPS ================= -->
+
+<section class="tips-section">
+
+    <div class="section-title">
+
+        <span class="section-label">
+            HEALTHY HABITS
+        </span>
+
+        <h2>
+            Simple Healthy Eating Tips
+        </h2>
+
+    </div>
+
+
+    <div class="tips-grid">
+
+        <div class="tip-card">
+
+            <span>💧</span>
+
+            <h3>
+                Stay Hydrated
+            </h3>
+
+            <p>
+                Drink water regularly throughout the day.
+            </p>
+
+        </div>
+
+
+        <div class="tip-card">
+
+            <span>🥦</span>
+
+            <h3>
+                Eat Vegetables
+            </h3>
+
+            <p>
+                Include different vegetables in your meals.
+            </p>
+
+        </div>
+
+
+        <div class="tip-card">
+
+            <span>🍎</span>
+
+            <h3>
+                Choose Whole Foods
+            </h3>
+
+            <p>
+                Prefer fruits, vegetables, whole grains
+                and minimally processed foods.
+            </p>
+
+        </div>
+
+
+        <div class="tip-card">
+
+            <span>🍟</span>
+
+            <h3>
+                Limit Junk Food
+            </h3>
+
+            <p>
+                Keep highly processed foods as occasional
+                choices rather than everyday staples.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= ABOUT ================= -->
+
+<section
+    class="about-section"
+    id="about">
+
+    <div class="about-content">
+
+        <span class="section-label">
+            ABOUT FOODWISE
+        </span>
+
+        <h2>
+            Make Smarter Food Choices
+        </h2>
+
+        <p>
+            FoodWise is an educational food analysis project
+            designed to help users understand differences
+            between healthy and highly processed foods.
+        </p>
+
+        <p>
+            The project combines food information,
+            nutrition comparison, personalized general
+            suggestions and healthier food swaps.
+        </p>
+
+        <div class="disclaimer">
+
+            ⚠️ <strong>Disclaimer:</strong>
+
+            Nutrition values and recommendations shown by
+            this educational project are estimates and should
+            not be treated as medical or clinical dietary advice.
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+    <h3>
+        🥗 FoodWise
+    </h3>
+
+    <p>
+        Smart Food Choices • Healthy Lifestyle
+    </p>
+
+    <p>
+        © 2026 FoodWise Project
+    </p>
+
+</footer>
+
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
