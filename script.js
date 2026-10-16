@@ -1241,470 +1241,184 @@ function createChart(first, second) {
 ========================================= */
 
 function generateDietPlan() {
+    const weight = Number(document.getElementById("userWeight").value);
+    const height = Number(document.getElementById("userHeight").value);
+    const age = Number(document.getElementById("userAge").value);
+    const gender = document.getElementById("userGender").value;
+    const activity = document.getElementById("activityLevel").value;
+    const goal = document.getElementById("dietGoal").value;
+    const preference = document.getElementById("foodPreference").value;
+    const budgetInput = document.getElementById("dailyBudget").value.trim();
+    const dailyBudget = budgetInput === "" ? null : Number(budgetInput);
+    const result = document.getElementById("dietResult");
 
-    const weight =
-        Number(
-            document.getElementById(
-                "userWeight"
-            ).value
-        );
-
-
-    const height =
-        Number(
-            document.getElementById(
-                "userHeight"
-            ).value
-        );
-
-
-    const age =
-        Number(
-            document.getElementById(
-                "userAge"
-            ).value
-        );
-
-
-    const gender =
-        document.getElementById(
-            "userGender"
-        ).value;
-
-
-    const activity =
-        document.getElementById(
-            "activityLevel"
-        ).value;
-
-
-    const goal =
-        document.getElementById(
-            "dietGoal"
-        ).value;
-
-
-    const result =
-        document.getElementById(
-            "dietResult"
-        );
-
-
-    if (
-        !weight ||
-        !height ||
-        !age
-    ) {
-
-        result.innerHTML = `
-
-            <div class="empty-planner">
-
-                <span>
-                    ⚠️
-                </span>
-
-                <h3>
-                    Please enter all details
-                </h3>
-
-                <p>
-                    Weight, height and age are required.
-                </p>
-
-            </div>
-
-        `;
-
+    if (!weight || !height || !age || weight <= 0 || height <= 0 || age <= 0) {
+        result.innerHTML = `<div class="empty-planner"><span>⚠️</span><h3>Please enter valid details</h3><p>Enter a positive weight, height and age to continue.</p></div>`;
         return;
-
+    }
+    if (weight < 20 || weight > 300 || height < 100 || height > 250 || age > 100 || (dailyBudget !== null && (!Number.isFinite(dailyBudget) || dailyBudget < 50 || dailyBudget > 3000))) {
+        result.innerHTML = `<div class="empty-planner"><span>⚠️</span><h3>Please check your details</h3><p>Use weight 20–300 kg, height 100–250 cm, age up to 100 years, and if entering a budget, use ₹50–₹3,000 per day.</p></div>`;
+        return;
     }
 
+    const bmi = weight / Math.pow(height / 100, 2);
+    const isAdult = age >= 18;
+    let bmiKey, bmiLabel, statusClass, advice, needs, portionTip;
 
-    /* BMI */
-
-    const heightMeter =
-        height / 100;
-
-
-    const bmi =
-        weight /
-        (
-            heightMeter *
-            heightMeter
-        );
-
-
-    let bmiCategory;
-
-
+    // Adult BMI screening categories. BMI is not a diagnosis.
     if (bmi < 18.5) {
-
-        bmiCategory =
-            "Below standard BMI range";
-
+        bmiKey = "under";
+        bmiLabel = '"Underweight" — below the usual healthy range';
+        statusClass = "bmi-under";
+        advice = "Your BMI is below the usual adult range. If this is accurate, you may need more energy overall and protein-containing foods at regular meals. If your weight is dropping without trying, talk to a healthcare professional.";
+        needs = "Energy-dense nutritious foods + protein at each main meal";
+        portionTip = "Avoid skipping meals. Add food gradually: an extra snack, milk/curd or fortified soy drink, nuts/seeds, peanut butter, pulses, tofu/paneer, eggs or fish/chicken as suitable. Your exact needs depend on age, activity and health.";
+    } else if (bmi < 25) {
+        bmiKey = "normal";
+        bmiLabel = '"Normal / Healthy BMI range" — generally within the usual adult range';
+        statusClass = "bmi-healthy";
+        advice = "Your BMI is within the usual adult range. Aim to maintain a varied eating pattern with vegetables, fruit, whole grains and protein foods, with portions that match hunger and activity.";
+        needs = "Balanced meals + enough protein and fibre";
+        portionTip = "A simple guide is vegetables/fruit, a protein food and whole grains across meals. Adjust portions to hunger, activity and personal needs.";
+    } else if (bmi < 30) {
+        bmiKey = "over";
+        bmiLabel = '"Overweight range" — above the usual healthy range';
+        statusClass = "bmi-over";
+        advice = "Your BMI is above the usual adult range. If weight management is your goal, focus on sustainable habits rather than crash diets: balanced portions, protein, vegetables, fibre and regular activity.";
+        needs = "Filling balanced meals + protein and fibre";
+        portionTip = "Include vegetables with meals, a protein source and a moderate grain portion. Prefer water or unsweetened drinks and adjust portions gradually; do not skip meals.";
+    } else {
+        bmiKey = "obesity";
+        bmiLabel = '"Obesity range" — substantially above the usual healthy range';
+        statusClass = "bmi-obesity";
+        advice = "Your BMI is in the adult obesity screening range. BMI alone cannot assess your health; consider a clinician or registered dietitian for individualized advice, especially if you have health conditions or take medication.";
+        needs = "Sustainable balanced meals + individualized guidance";
+        portionTip = "Build meals around vegetables, protein foods and whole grains, and choose mostly water or unsweetened drinks. Avoid severe restriction; a clinician can help tailor portions safely.";
     }
 
-    else if (bmi < 25) {
-
-        bmiCategory =
-            "Within standard BMI range";
-
-    }
-
-    else if (bmi < 30) {
-
-        bmiCategory =
-            "Above standard BMI range";
-
-    }
-
-    else {
-
-        bmiCategory =
-            "Higher BMI range";
-
-    }
-
-
-    /* BMR */
-
-    let bmr;
-
-
-    if (gender === "male") {
-
-        bmr =
-            (
-                10 * weight
-            ) +
-            (
-                6.25 * height
-            ) -
-            (
-                5 * age
-            ) +
-            5;
-
-    }
-
-    else {
-
-        bmr =
-            (
-                10 * weight
-            ) +
-            (
-                6.25 * height
-            ) -
-            (
-                5 * age
-            ) -
-            161;
-
-    }
-
-
-    /* ACTIVITY */
-
-    let activityMultiplier;
-
-
-    if (activity === "low") {
-
-        activityMultiplier =
-            1.2;
-
-    }
-
-    else if (
-        activity === "moderate"
-    ) {
-
-        activityMultiplier =
-            1.55;
-
-    }
-
-    else {
-
-        activityMultiplier =
-            1.725;
-
-    }
-
-
-    let calories =
-        bmr *
-        activityMultiplier;
-
-
-    /* GOAL */
-
-    if (goal === "loss") {
-
-        calories -= 300;
-
-    }
-
-    else if (goal === "gain") {
-
-        calories += 300;
-
-    }
-
-
-    calories =
-        Math.round(calories);
-
-
-    let goalText;
-
-
-    if (goal === "loss") {
-
-        goalText =
-            "Gradual weight-loss focused";
-
-    }
-
-    else if (goal === "gain") {
-
-        goalText =
-            "Gradual weight-gain focused";
-
-    }
-
-    else {
-
-        goalText =
-            "Weight-maintenance focused";
-
-    }
-
-
-    /* FOOD RECOMMENDATIONS */
-
-    let proteinFoods =
-        foods.filter(
-            food =>
-                food.type === "healthy" &&
-                food.protein >= 8
-        )
-        .slice(0, 5);
-
-
-    let fiberFoods =
-        foods.filter(
-            food =>
-                food.type === "healthy" &&
-                food.fiber >= 3
-        )
-        .slice(0, 5);
-
-
-    const proteinList =
-        proteinFoods
-            .map(
-                food =>
-                    `${food.emoji} ${food.name}`
-            )
-            .join(" • ");
-
-
-    const fiberList =
-        fiberFoods
-            .map(
-                food =>
-                    `${food.emoji} ${food.name}`
-            )
-            .join(" • ");
-
+    // Adult-only rough energy estimate; not a prescription or suitable for under-18s.
+    const bmr = gender === "male"
+        ? (10 * weight) + (6.25 * height) - (5 * age) + 5
+        : (10 * weight) + (6.25 * height) - (5 * age) - 161;
+    const activityMultiplier = { low: 1.2, moderate: 1.55, high: 1.725 }[activity] || 1.2;
+    let calories = Math.round(bmr * activityMultiplier);
+    if (goal === "loss") calories -= 250;
+    if (goal === "gain") calories += 250;
+    // Avoid displaying a misleading calorie target for minors.
+    calories = Math.max(1200, calories);
+
+    const goalText = { maintain: "Maintain weight", loss: "Gradual weight-management focus", gain: "Gradual weight-gain focus" }[goal];
+
+    // Meals are differentiated by BMI screening group, food preference and budget.
+    const plans = {
+      vegetarian: {
+        under: {
+          low: ["Milk/fortified soy milk oats with banana and peanuts", "Rice/roti with dal, soy-chunk curry and seasonal sabzi", "Banana with roasted chana or peanut chikki", "Khichdi with extra dal, curd and a little oil/ghee if suitable"],
+          mid: ["Oats in milk, banana and nuts; or besan chilla with curd", "Roti/rice, dal, paneer or soy chunks, sabzi and curd", "Fruit smoothie with milk/fortified soy drink, or yogurt and nuts", "Roti/rice with rajma/chole, tofu/paneer and vegetables"],
+          high: ["Oats with milk, banana, nuts and seeds", "Whole grains, dal, paneer/tofu, vegetables and curd", "Greek yogurt/curd with fruit and nuts", "Tofu/paneer or beans with rice/roti and vegetables"]
+        },
+        normal: {
+          low: ["Vegetable poha/upma with peanuts and seasonal fruit", "Roti/rice, dal or chana, seasonal sabzi", "Seasonal fruit or roasted chana", "Vegetable khichdi with dal and curd"],
+          mid: ["Besan chilla with curd and fruit", "Roti/rice, dal/rajma/chole, sabzi and curd", "Fruit with roasted chana or plain yogurt", "Roti with dal or paneer/tofu and mixed vegetables"],
+          high: ["Oats with milk/fortified soy drink, fruit and seeds", "Whole grains, dal, paneer/tofu, vegetables and curd", "Fruit, yogurt and a small handful of nuts", "Tofu/paneer or mixed beans, vegetables and whole grains"]
+        },
+        over: {
+          low: ["Vegetable poha or besan chilla; unsweetened tea", "Dal, seasonal sabzi and a measured rice/roti portion", "One seasonal fruit or roasted chana", "Vegetable-rich dal/khichdi with curd"],
+          mid: ["Besan chilla with vegetables and plain curd", "Half plate vegetables, dal/chole/tofu and a moderate roti/rice portion", "Fruit, plain curd or roasted chana", "Paneer/tofu/dal with sabzi and a moderate whole-grain portion"],
+          high: ["Unsweetened oats with fruit and yogurt", "Large vegetable portion, beans/dal/tofu and whole grains", "Plain yogurt or fruit with a small portion of nuts", "Tofu/paneer or dal, vegetables and whole grains"]
+        },
+        obesity: {
+          low: ["Vegetable besan chilla", "Dal, seasonal vegetables and a measured roti/rice portion", "One fruit or plain curd", "Vegetable dal/khichdi with extra vegetables"],
+          mid: ["Besan chilla with vegetables and plain curd", "Half plate vegetables, dal/beans/tofu and a measured grain portion", "Fruit or plain yogurt", "Dal/tofu/paneer with sabzi and a moderate grain portion"],
+          high: ["Oats with plain yogurt and fruit", "Vegetables, beans/tofu and whole grains", "Fruit or plain yogurt", "Vegetable-rich dal/tofu with a moderate whole-grain portion"]
+        }
+      },
+      nonvegetarian: {
+        under: {
+          low: ["Egg bhurji with roti and banana; milk if suitable", "Rice/roti, egg curry or chicken when affordable, dal and sabzi", "Milk/fortified soy smoothie or curd with peanuts", "Egg/chicken curry with rice/roti and vegetables"],
+          mid: ["Eggs with whole-grain toast/roti, milk and banana", "Rice/roti, chicken/fish or eggs, dal, vegetables and curd", "Yogurt with nuts or a fruit smoothie", "Chicken/fish/eggs, dal, vegetables and rice/roti"],
+          high: ["Eggs, whole-grain toast/roti, milk and fruit", "Grilled chicken/fish, grains, vegetables and curd", "Yogurt, fruit and nuts", "Fish/chicken/eggs, vegetables and whole grains"]
+        },
+        normal: {
+          low: ["Eggs with roti or vegetable poha", "Dal, seasonal sabzi and rice/roti; egg if budget allows", "Seasonal fruit or roasted chana", "Egg curry or dal with vegetables and roti/rice"],
+          mid: ["Egg bhurji with roti and fruit", "Roti/rice, chicken or eggs, dal and vegetables", "Fruit with curd or roasted chana", "Chicken/egg curry or fish when affordable, vegetables and grains"],
+          high: ["Eggs with whole-grain toast and fruit", "Grilled chicken/fish, whole grains and vegetables", "Plain yogurt, fruit or nuts", "Fish/chicken/eggs, vegetables and whole grains"]
+        },
+        over: {
+          low: ["Boiled eggs with fruit or vegetable poha", "Dal, vegetables and a measured rice/roti portion; egg if desired", "Fruit or plain curd", "Egg curry or dal with vegetables and a moderate grain portion"],
+          mid: ["Boiled eggs or vegetable omelette with fruit", "Half plate vegetables, grilled chicken/egg or dal, and a moderate grain portion", "Fruit, plain curd or a boiled egg", "Grilled/baked chicken or fish, vegetables and a moderate roti portion"],
+          high: ["Vegetable omelette with whole-grain toast", "Grilled chicken/fish or pulses, vegetables and whole grains", "Plain yogurt or fruit", "Baked fish/chicken or dal, vegetables and a moderate grain portion"]
+        },
+        obesity: {
+          low: ["Boiled eggs or besan chilla with vegetables", "Dal, seasonal vegetables and a measured rice/roti portion", "Fruit or plain curd", "Egg curry or dal with vegetables and a moderate grain portion"],
+          mid: ["Vegetable omelette and fruit", "Half plate vegetables, chicken/fish or pulses, and a measured grain portion", "Fruit, plain yogurt or a boiled egg", "Grilled/baked chicken or fish, vegetables and a moderate grain portion"],
+          high: ["Eggs with vegetables and whole-grain toast", "Grilled chicken/fish or beans, vegetables and whole grains", "Plain yogurt or fruit", "Fish/chicken or dal, vegetables and a moderate whole-grain portion"]
+        }
+      }
+    };
+
+    const budgetInfo = {
+      low: { label: "Economy", note: "Focus on seasonal produce, dal, chickpeas, soy chunks, eggs if included, rice/roti and homemade meals." },
+      mid: { label: "Balanced", note: "Combine grains, pulses, seasonal vegetables, fruit, curd and affordable protein foods." },
+      high: { label: "Flexible", note: "Allows more variety such as nuts, paneer/tofu, more fruit, fish or lean chicken, depending on local prices." }
+    };
+    const selectedBudgetKey = dailyBudget === null ? null : dailyBudget < 150 ? "low" : dailyBudget < 300 ? "mid" : "high";
+    const budgetKeysToShow = selectedBudgetKey ? [selectedBudgetKey] : ["low", "mid", "high"];
+    const budgetTier = selectedBudgetKey ? budgetInfo[selectedBudgetKey].label : "All budget options";
+    const budgetPlanHtml = budgetKeysToShow.map(key => {
+      const meals = plans[preference][bmiKey][key];
+      const info = budgetInfo[key];
+      return `<div class="budget-plan-block"><h4>💰 ${info.label} plan${dailyBudget !== null ? ` · your budget: ₹${dailyBudget}/day` : ""}</h4>
+        <div class="meal"><h4>🌅 Breakfast</h4><p>${meals[0]}</p></div>
+        <div class="meal"><h4>🍱 Lunch</h4><p>${meals[1]}</p></div>
+        <div class="meal"><h4>🍎 Evening snack</h4><p>${meals[2]}</p></div>
+        <div class="meal"><h4>🌙 Dinner</h4><p>${meals[3]}</p></div>
+        <p class="field-help">${info.note}</p>
+      </div>`;
+    }).join("");
+    const budgetSummary = dailyBudget === null
+      ? "No budget selected: compare all three budget styles below."
+      : `Budget entered: ₹${dailyBudget}/day. The ${budgetTier.toLowerCase()} plan is shown; food prices vary by location and season.`;
+
+    // Height and weight affect BMI and are shown in the plan; portions must also consider activity and hunger.
+    const bodyNote = bmiKey === "under"
+      ? "Priority: if underweight is confirmed, increase energy intake gradually and include protein foods at meals. Budget-friendly options include dal, soy chunks, milk/curd, peanuts, chickpeas and eggs if included."
+      : bmiKey === "normal"
+        ? "Priority: maintain balanced variety and adjust portions to activity and hunger."
+        : "Priority: choose filling meals with vegetables, fibre and protein, and make gradual changes rather than crash dieting.";
+
+    const proteinOptions = preference === "vegetarian"
+      ? "Dal, chickpeas, rajma, soy chunks/tofu, paneer, milk/curd, peanuts, nuts and seeds"
+      : "Eggs, chicken, fish, dal, beans, milk/curd, peanuts, nuts and seeds";
+
+    const ageNote = !isAdult
+      ? `<div class="replacement-reason"><strong>Age note</strong><p>For people under 18, adult BMI cut-offs and adult calorie equations should not be used to classify weight or set calorie goals. This is only general food inspiration; ask a healthcare professional for age-appropriate guidance.</p></div>`
+      : "";
+    const displayCategory = isAdult ? bmiLabel : '"Age-specific BMI category needed" — adult ranges do not apply';
+    const displayAdvice = isAdult ? advice : "For children and teenagers, BMI is interpreted using age- and sex-specific growth charts. Focus on regular balanced meals and seek age-appropriate guidance.";
 
     result.innerHTML = `
-
-        <div class="plan-header">
-
-            <h3>
-                🥗 Your Food Guide
-            </h3>
-
-            <p>
-                ${goalText}
-            </p>
-
-        </div>
-
-
-        <div class="plan-stats">
-
-            <div class="plan-stat">
-
-                <strong>
-                    ${weight} kg
-                </strong>
-
-                Weight
-
-            </div>
-
-
-            <div class="plan-stat">
-
-                <strong>
-                    ${bmi.toFixed(1)}
-                </strong>
-
-                BMI Estimate
-
-            </div>
-
-
-            <div class="plan-stat">
-
-                <strong>
-                    ${calories}
-                </strong>
-
-                Estimated kcal/day
-
-            </div>
-
-
-            <div class="plan-stat">
-
-                <strong>
-                    ${bmiCategory}
-                </strong>
-
-                BMI Category
-
-            </div>
-
-        </div>
-
-
-        <div class="meal-plan">
-
-
-            <div class="meal">
-
-                <h4>
-                    🌅 Breakfast
-                </h4>
-
-                <p>
-                    Oatmeal + fruit + Greek yogurt
-                    OR eggs + whole-grain toast + fruit.
-                </p>
-
-            </div>
-
-
-            <div class="meal">
-
-                <h4>
-                    🍱 Lunch
-                </h4>
-
-                <p>
-                    Dal + rice/roti + vegetables
-                    + salad + yogurt.
-                </p>
-
-            </div>
-
-
-            <div class="meal">
-
-                <h4>
-                    🥜 Evening Snack
-                </h4>
-
-                <p>
-                    Fruit + a small portion of nuts
-                    OR Greek yogurt.
-                </p>
-
-            </div>
-
-
-            <div class="meal">
-
-                <h4>
-                    🌙 Dinner
-                </h4>
-
-                <p>
-                    Vegetables + dal/paneer/chicken/eggs
-                    + roti or another whole-grain option.
-                </p>
-
-            </div>
-
-
-            <div class="meal">
-
-                <h4>
-                    💪 Protein Options
-                </h4>
-
-                <p>
-                    ${proteinList}
-                </p>
-
-            </div>
-
-
-            <div class="meal">
-
-                <h4>
-                    🥦 Fiber-Rich Options
-                </h4>
-
-                <p>
-                    ${fiberList}
-                </p>
-
-            </div>
-
-
-            <div class="meal">
-
-                <h4>
-                    🍟 Try To Limit
-                </h4>
-
-                <p>
-                    Sugary drinks, frequent deep-fried foods,
-                    highly processed snacks and excessive
-                    added-sugar foods.
-                </p>
-
-            </div>
-
-
-        </div>
-
-
-        <div class="replacement-reason">
-
-            <strong>
-                💡 Important
-            </strong>
-
-            <p>
-                This plan provides general educational
-                suggestions. Individual nutritional needs
-                can vary considerably.
-            </p>
-
-        </div>
-
-    `;
-
+      <div class="plan-header"><h3>🥗 Your Personalized Food Guide</h3><p>${goalText} · ${preference === "vegetarian" ? "Vegetarian" : "Non-vegetarian"} · ${budgetTier}</p></div>
+      <div class="plan-stats">
+        <div class="plan-stat"><strong>${weight} kg</strong>Weight</div>
+        <div class="plan-stat"><strong>${height} cm</strong>Height</div>
+        <div class="plan-stat"><strong>${bmi.toFixed(1)}</strong>BMI estimate</div>
+        <div class="plan-stat"><strong>${isAdult ? bmiKey === "normal" ? "Normal / Healthy" : bmiKey === "under" ? "Underweight" : bmiKey === "over" ? "Overweight" : "Obesity range" : "Age-specific review"}</strong>BMI category</div>
+        <div class="plan-stat"><strong>${isAdult ? calories.toLocaleString("en-IN") : "Not estimated"}</strong>Rough kcal/day estimate</div>
+        <div class="plan-stat"><strong>${activity === "low" ? "Low" : activity === "moderate" ? "Moderate" : "High"}</strong>Activity</div>
+        <div class="plan-stat"><strong>${dailyBudget === null ? "Not set" : `₹${dailyBudget}`}</strong>Daily budget</div>
+        <div class="plan-stat"><strong>${budgetTier}</strong>Budget option</div>
+      </div>
+      <div class="replacement-reason ${isAdult ? statusClass : ""}"><strong>📊 BMI result: ${displayCategory}</strong><p>${displayAdvice}</p><p><strong>What your body may need:</strong> ${needs}</p></div>
+      <div class="meal-plan">
+        <div class="meal"><h4>💪 Protein choices</h4><p>${proteinOptions}</p></div>
+        <div class="meal"><h4>🍽️ Portion guidance</h4><p>${portionTip} ${bodyNote}</p></div>
+        <div class="meal"><h4>💰 Budget guidance</h4><p>${budgetSummary} These are example food suggestions, not live price calculations. Local prices, portion sizes and seasonal availability vary, so costs are not guaranteed.</p></div>
+        ${budgetPlanHtml}
+      </div>
+      <div class="replacement-reason"><strong>💡 Important</strong><p>BMI is a screening tool, not a diagnosis. A BMI below or above the usual range does not by itself determine your exact calorie or protein requirement. This sample plan is not medical advice; consult a registered dietitian or healthcare professional for individualized portions, especially if weight change is unexplained or you have a medical condition.</p></div>
+      ${ageNote}`;
 }
-
 
 /* =========================================
    JUNK FOOD REPLACEMENTS
